@@ -138,6 +138,21 @@ Plus a three-panel visual: **original frame → detections/tracks → Grad-CAM e
 
 Only after M1–M3 are stable does the YOLO+ViT hybrid design begin — this guarantees a working traffic-monitoring product exists even if the research-grade fusion component takes longer than planned.
 
+### Run M1–M3 (CPU)
+
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+pip install -r requirements.txt
+
+python ai-core/detection/detect.py --source samples/YOUR_CLIP.jpg
+python ai-core/tracking/track.py --source samples/YOUR_CLIP.mp4
+python ai-core/tracking/count.py --source samples/YOUR_CLIP.mp4 --line-norm 0,0.5,1,0.5
+```
+
+Put a clip in `samples/` (gitignored except `.gitkeep`). Track status in `docs/PROGRESS.md`.
+
 ---
 
 ## 7. Evaluation Plan

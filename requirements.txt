@@ -1,0 +1,7 @@
+# CPU-first. Install CPU PyTorch first (avoids a CUDA wheel on Colab/Kaggle/laptops):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# ByteTrack is bundled with Ultralytics — no extra tracking package.
+
+ultralytics==8.3.78
+opencv-python==4.10.0.84
+numpy==1.26.4
