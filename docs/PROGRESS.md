@@ -7,6 +7,7 @@
 - **M3 — Line-crossing counts:** `ai-core/tracking/count.py`
 - **M4 — Congestion and stopped-vehicle anomaly analysis:** `ai-core/traffic/analyze.py`
 - **M5 — CPU performance baseline:** `ai-core/benchmark/benchmark.py`
+- **M6 — Vision Transformer:** `ai-core/vit/extract.py`
 
 Run the complete M5 baseline from the repository root:
 
@@ -16,9 +17,16 @@ python ai-core/benchmark/benchmark.py --source samples/traffic2.mp4
 
 Use `--max-frames 200` for a partial run. The JSON report defaults to `outputs/benchmark/m5_baseline.json`. Model loading is reported separately from processing FPS.
 
+Run the M6 Vision Transformer feature extraction:
+
+```bash
+python ai-core/vit/extract.py --source samples/traffic2.mp4
+```
+
+Use `--sample-every 10` and `--batch-size 4`. Embeddings are saved to `outputs/vit/traffic2_embeddings.npz` and metrics to `outputs/vit/m6_vit_results.json`.
+
 ## Not started
 
-- **M6:** Vision Transformer
 - **M7:** YOLO + ViT fusion
 - **M8:** Grad-CAM / explainability
 - **M9:** CPU optimization
