@@ -8,6 +8,7 @@
 - **M4 — Congestion and stopped-vehicle anomaly analysis:** `ai-core/traffic/analyze.py`
 - **M5 — CPU performance baseline:** `ai-core/benchmark/benchmark.py`
 - **M6 — Vision Transformer:** `ai-core/vit/extract.py`
+- **M7 — YOLO + ViT feature fusion:** `ai-core/fusion/fuse.py`
 
 Run the complete M5 baseline from the repository root:
 
@@ -25,9 +26,16 @@ python ai-core/vit/extract.py --source samples/traffic2.mp4
 
 Use `--sample-every 10` and `--batch-size 4`. Embeddings are saved to `outputs/vit/traffic2_embeddings.npz` and metrics to `outputs/vit/m6_vit_results.json`.
 
+Run the M7 YOLO + ViT feature fusion:
+
+```bash
+python ai-core/fusion/fuse.py --source samples/traffic2.mp4 --sample-every 10
+```
+
+Fused features are saved to `outputs/fusion/traffic2_fused_features.npz` and metrics to `outputs/fusion/m7_fusion_results.json`.
+
 ## Not started
 
-- **M7:** YOLO + ViT fusion
 - **M8:** Grad-CAM / explainability
 - **M9:** CPU optimization
 
