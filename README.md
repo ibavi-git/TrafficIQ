@@ -132,13 +132,19 @@ Plus a three-panel visual: **original frame → detections/tracks → Grad-CAM e
 
 ## 6. Milestones (near-term)
 
-- **M1 — YOLO traffic detection** *(in progress)*
-- **M2 — Video + tracking**: `traffic.mp4 → YOLO → ByteTrack → per-vehicle IDs`
-- **M3 — Vehicle counting**: IDs → line-crossing → per-class counts
+- **M1 — YOLO vehicle detection:** complete
+- **M2 — ByteTrack vehicle tracking:** complete
+- **M3 — Line-crossing vehicle counting:** complete
+- **M4 — Congestion and stopped-vehicle anomaly analysis:** complete
+- **M5 — CPU performance baseline:** implemented
+- **M6 — Vision Transformer:** not started
+- **M7 — YOLO + ViT fusion:** not started
+- **M8 — Grad-CAM / explainability:** not started
+- **M9 — CPU optimization:** not started
 
-Only after M1–M3 are stable does the YOLO+ViT hybrid design begin — this guarantees a working traffic-monitoring product exists even if the research-grade fusion component takes longer than planned.
+M5 measures the existing YOLOv8n + ByteTrack + vehicle-filtering pipeline. It is a performance baseline, not an accuracy evaluation.
 
-### Run M1–M3 (CPU)
+### Run M1–M5 (CPU)
 
 ```bash
 python -m venv .venv
@@ -149,9 +155,11 @@ pip install -r requirements.txt
 python ai-core/detection/detect.py --source samples/YOUR_CLIP.jpg
 python ai-core/tracking/track.py --source samples/YOUR_CLIP.mp4
 python ai-core/tracking/count.py --source samples/YOUR_CLIP.mp4 --line-norm 0,0.5,1,0.5
+python ai-core/traffic/analyze.py --source samples/YOUR_CLIP.mp4
+python ai-core/benchmark/benchmark.py --source samples/traffic2.mp4
 ```
 
-Put a clip in `samples/` (gitignored except `.gitkeep`). Track status in `docs/PROGRESS.md`.
+Use `--max-frames 200` to benchmark only part of a video. Results default to `outputs/benchmark/m5_baseline.json`; generated outputs and sample media remain gitignored. Track status in `docs/PROGRESS.md`.
 
 ---
 
