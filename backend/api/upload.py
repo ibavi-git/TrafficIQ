@@ -25,7 +25,7 @@ async def upload_video(file: UploadFile = File(...)) -> dict[str, str]:
             detail="Unsupported video format. Upload an MP4, AVI, or MOV file.",
         )
 
-    job = job_manager.create_job(suffix)
+    job = job_manager.create_job(suffix, filename)
     size = 0
     try:
         with job.source_path.open("wb") as destination:

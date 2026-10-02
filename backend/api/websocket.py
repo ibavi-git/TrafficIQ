@@ -33,3 +33,29 @@ async def job_updates(websocket: WebSocket, job_id: str) -> None:
         pass
     finally:
         job_manager.unsubscribe(job_id, queue)
+
+
+@router.websocket("/ws/{job_id}/xai")
+async def xai_job_updates(websocket: WebSocket, job_id: str) -> None:
+    await websocket.accept()
+    queue = await job_manager.subscribe_xai(job_id)
+    if queue is None:
+        await websocket.send_json(
+            {"type": "xai_status", "status": "error", "message": "Analysis job not found."}
+        )
+        await websocket.close(code=4404)
+        return
+
+    try:
+        while True:
+            message = await queue.get()
+            await websocket.send_json(message)
+            if message.get("type") == "xai_status" and message.get("status") in {
+                "completed",
+                "error",
+            }:
+                break
+    except WebSocketDisconnect:
+        pass
+    finally:
+        job_manager.unsubscribe(job_id, queue)

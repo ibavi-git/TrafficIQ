@@ -13,6 +13,15 @@ const PAGE_META = {
   roadmap: { title: 'Roadmap', eyebrow: 'DEVELOPMENT TRACK' },
 }
 
+const EMPTY_XAI = {
+  status: 'idle',
+  progress: 0,
+  videoUrl: null,
+  metadataUrl: null,
+  sourceFilename: null,
+  error: '',
+}
+
 export default function App() {
   const [page, setPage] = useState('dashboard')
   const [jobId, setJobId] = useState(null)
@@ -23,6 +32,8 @@ export default function App() {
   const [uploadError, setUploadError] = useState('')
   const [connection, setConnection] = useState('offline')
   const [connectionWarning, setConnectionWarning] = useState('')
+  const [xai, setXai] = useState(EMPTY_XAI)
+  const xaiRunning = xai.status === 'queued' || xai.status === 'processing'
 
   useEffect(() => {
     if (!jobId) return undefined
@@ -74,11 +85,53 @@ export default function App() {
     }
   }, [jobId])
 
+  useEffect(() => {
+    if (!jobId || !xaiRunning) return undefined
+
+    let disposed = false
+    let terminal = false
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const socket = new WebSocket(`${protocol}//${window.location.host}/ws/${jobId}/xai`)
+
+    socket.onmessage = (event) => {
+      let update
+      try {
+        update = JSON.parse(event.data)
+      } catch {
+        return
+      }
+      if (update.type !== 'xai_status') return
+      if (update.status === 'completed' || update.status === 'error') terminal = true
+      setXai((current) => ({
+        ...current,
+        status: update.status,
+        progress: update.progress ?? current.progress,
+        videoUrl: update.video_url ?? current.videoUrl,
+        metadataUrl: update.metadata_url ?? current.metadataUrl,
+        sourceFilename: update.source_filename ?? current.sourceFilename,
+        error: update.message || '',
+      }))
+    }
+    socket.onclose = () => {
+      if (!disposed && !terminal) {
+        setXai((current) => current.status === 'completed' || current.status === 'error'
+          ? current
+          : { ...current, status: 'error', error: 'XAI status connection was interrupted. Retry generation.' })
+      }
+    }
+
+    return () => {
+      disposed = true
+      socket.close()
+    }
+  }, [jobId, xaiRunning])
+
   async function startAnalysis(file) {
     setUploadError('')
     setConnectionWarning('')
     setMetrics(null)
     setProgress(0)
+    setXai(EMPTY_XAI)
     setFilename(file.name)
     setJobId(null)
     setConnection('connecting')
@@ -105,11 +158,42 @@ export default function App() {
     }
   }
 
+  async function generateXai() {
+    if (!jobId || jobStatus !== 'completed') return
+    setXai({ ...EMPTY_XAI, status: 'queued' })
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/xai`, { method: 'POST' })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.detail || 'Could not start Explainable AI.')
+      if (result.status === 'completed') {
+        setXai((current) => ({
+          ...current,
+          status: 'completed',
+          progress: 100,
+          videoUrl: result.video_url,
+          metadataUrl: result.metadata_url,
+          sourceFilename: filename,
+          error: '',
+        }))
+      }
+    } catch (error) {
+      setXai((current) => ({
+        ...current,
+        status: 'error',
+        progress: 0,
+        error: error instanceof TypeError
+          ? 'TrafficIQ could not reach the backend. Try again when the service is available.'
+          : error.message,
+      }))
+    }
+  }
+
   function resetAnalysis() {
     setJobId(null)
     setJobStatus('idle')
     setProgress(0)
     setMetrics(null)
+    setXai(EMPTY_XAI)
     setFilename('')
     setUploadError('')
     setConnectionWarning('')
@@ -127,11 +211,26 @@ export default function App() {
         filename={filename}
         error={uploadError}
         connectionWarning={connectionWarning}
+        xaiStatus={xai.status}
+        xaiProgress={xai.progress}
+        xaiError={xai.error}
+        onGenerateXai={generateXai}
         onStart={startAnalysis}
         onReset={resetAnalysis}
       />
     ),
-    explainability: <ExplainableAI />,
+    explainability: (
+      <ExplainableAI
+        jobStatus={jobStatus}
+        jobFilename={filename}
+        xaiStatus={xai.status}
+        xaiProgress={xai.progress}
+        xaiVideoUrl={xai.videoUrl}
+        xaiMetadataUrl={xai.metadataUrl}
+        xaiSourceFilename={xai.sourceFilename}
+        xaiError={xai.error}
+      />
+    ),
     control: <AIControl />,
     roadmap: <Roadmap />,
   }[activePage]

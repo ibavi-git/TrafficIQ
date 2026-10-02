@@ -145,6 +145,17 @@ h2, h3, p { margin-top: 0; }
 .frame-readout strong { color: #cbd6d5; font: 11px var(--mono); }
 .inline-warning { margin: 14px 0 0; color: var(--amber); font-size: 11px; line-height: 1.5; }
 .error-panel { display: flex; gap: 9px; padding: 12px; border: 1px solid #603b39; border-radius: 5px; color: var(--red); background: #251918; font-size: 11px; line-height: 1.5; }
+.xai-launch-panel { display: grid; gap: 10px; padding: 14px; border: 1px solid #354844; border-radius: 5px; background: #151e1d; }
+.xai-launch-button { min-height: 39px; font-size: 9px; }
+.xai-launch-note { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.xai-progress { display: grid; gap: 6px; }
+.xai-progress .progress-labels { margin: 0; }
+.xai-unavailable .progress-track { width: min(320px, 80vw); margin-top: 4px; }
+.xai-unavailable small { color: var(--cyan); font: 10px var(--mono); }
+.xai-result-source { display: flex; justify-content: space-between; gap: 12px; margin-top: 11px; padding: 10px; border-top: 1px solid var(--line-soft); color: var(--muted); font: 9px var(--mono); }
+.xai-result-source strong { overflow: hidden; color: var(--cyan); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.sample-warning { display: flex; gap: 10px; margin: 10px 0 0; padding: 10px; border-left: 2px solid var(--amber); color: #b8c1bf; background: #1c1d1b; font-size: 10px; line-height: 1.5; }
+.sample-warning strong { flex: 0 0 auto; color: var(--amber); font: 9px var(--mono); }
 .upload-progress-panel { min-height: 280px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
 .upload-progress-panel h2 { margin: 0; font-size: 18px; }
 .progress-indeterminate { width: 30%; animation: slide 1.2s ease-in-out infinite alternate; }

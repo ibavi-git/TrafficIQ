@@ -6,7 +6,7 @@ import { TrafficStatus } from '../components/TrafficStatus.jsx'
 import { UploadPanel } from '../components/UploadPanel.jsx'
 import { VideoPanel } from '../components/VideoPanel.jsx'
 
-export function Dashboard({ jobId, jobStatus, progress, metrics, filename, error, connectionWarning, onStart, onReset }) {
+export function Dashboard({ jobId, jobStatus, progress, metrics, filename, error, connectionWarning, xaiStatus, xaiProgress, xaiError, onGenerateXai, onStart, onReset }) {
   const [busy, setBusy] = useState(false)
   const [localPreview, setLocalPreview] = useState('')
   const preview = metrics?.frame_jpeg_base64 ? `data:image/jpeg;base64,${metrics.frame_jpeg_base64}` : ''
@@ -60,6 +60,27 @@ export function Dashboard({ jobId, jobStatus, progress, metrics, filename, error
         <aside className="dashboard-side-column">
           <TrafficStatus status={metrics?.congestion_status} index={metrics?.congestion_index} />
           <ProcessingStatus status={jobStatus} progress={progress} metrics={metrics} filename={filename} warning={connectionWarning} />
+          {jobStatus === 'completed' && (
+            <section className="xai-launch-panel">
+              <span className="eyebrow">ON-DEMAND M8</span>
+              <button
+                className="primary-button xai-launch-button"
+                disabled={xaiStatus === 'queued' || xaiStatus === 'processing' || xaiStatus === 'completed'}
+                onClick={onGenerateXai}
+              >
+                <span>{xaiStatus === 'processing' || xaiStatus === 'queued' ? 'GENERATING XAI...' : xaiStatus === 'completed' ? 'EXPLAINABLE AI READY' : xaiStatus === 'error' ? 'RETRY EXPLAINABLE AI' : 'GENERATE EXPLAINABLE AI'}</span>
+                <span className="button-arrow">{xaiStatus === 'completed' ? '✓' : '→'}</span>
+              </button>
+              {(xaiStatus === 'queued' || xaiStatus === 'processing') && (
+                <div className="xai-progress" role="status">
+                  <div className="progress-labels"><span>GRAD-CAM SAMPLE JOB</span><strong>{xaiProgress}%</strong></div>
+                  <div className="progress-track"><span style={{ width: `${xaiProgress}%` }} /></div>
+                </div>
+              )}
+              {xaiStatus === 'completed' && <p className="xai-launch-note">Sampled Grad-CAM output is ready on the Explainable AI page.</p>}
+              {xaiError && <p className="form-error" role="alert">{xaiError}</p>}
+            </section>
+          )}
           {jobStatus === 'error' && error && <div className="error-panel" role="alert"><AlertTriangle size={17} /><span>{error}</span></div>}
         </aside>
       </div>
