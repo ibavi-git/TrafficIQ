@@ -19,3 +19,6 @@ runs/
 
 samples/*
 !samples/.gitkeep
+node_modules/
+package-lock.json
+dist/
