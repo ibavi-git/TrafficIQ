@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from backend.api.upload import router as upload_router
 from backend.api.websocket import router as websocket_router
 from backend.api.xai import router as xai_router
+from backend.prediction.router import router as prediction_router
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 XAI_PREVIEW = REPO_ROOT / "outputs" / "xai" / "m8_gradcam_preview.mp4"
@@ -26,7 +27,7 @@ app.add_middleware(
 app.include_router(upload_router)
 app.include_router(websocket_router)
 app.include_router(xai_router)
-
+app.include_router(prediction_router)
 
 @app.get("/api/health")
 async def health() -> dict[str, str]:

@@ -1,0 +1,23 @@
+{
+    "feature_columns": [
+        "temp",
+        "rain_1h",
+        "snow_1h",
+        "clouds_all",
+        "hour",
+        "dayofweek",
+        "month",
+        "is_weekend",
+        "lag_1",
+        "lag_2",
+        "lag_3",
+        "lag_24"
+    ],
+    "target_column": "traffic_volume",
+    "training_datetime": "2026-10-29 13:57:23",
+    "test_metrics": {
+        "MAE": 146.3135965538332,
+        "RMSE": 231.14937268836434,
+        "R2_Score": 0.9863622637402407
+    }
+}
